@@ -25,10 +25,20 @@ BluetoothKit---Android Bluetooth Framework
 
 # **用法**
 
-1、在Android Studio的build.gradle中，在dependencies里添加一行:
+1、Root build.gradle中，dependencies添加:
+
+```
+allprojects {
+	repositories {
+		...
+		maven { url 'https://www.jitpack.io' }
+	}
+}
+```
+app build.gradle 添加
 
 ```groovy
-compile 'com.inuker.bluetooth:library:1.4.0'
+implementation 'com.github.g19980115:Android-BluetoothKit:1.4.1'
 ```
 
 如果是Eclipse，可以导入bluetoothkit.jar，在AndroidManifest.xml中添加如下：
