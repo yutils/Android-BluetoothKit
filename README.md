@@ -75,8 +75,8 @@ BluetoothClient mClient = new BluetoothClient(context);
 ```Java
 SearchRequest request = new SearchRequest.Builder()
         .searchBluetoothLeDevice(3000, 3)   // 先扫BLE设备3次，每次3s
-        .searchBluetoothClassicDevice(5000) // 再扫经典蓝牙5s
-        .searchBluetoothLeDevice(2000)      // 再扫BLE设备2s
+        //.searchBluetoothClassicDevice(5000) // 再扫经典蓝牙5s
+        //.searchBluetoothLeDevice(2000)      // 再扫BLE设备2s
         .build();
 
 mClient.search(request, new SearchResponse() {
