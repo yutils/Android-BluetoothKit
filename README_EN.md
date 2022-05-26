@@ -24,7 +24,7 @@ This library allows for easy access to Bluetooth device scan and connection, sup
 1、If you are building with Gradle, simply add the following line to the `dependencies` section of your `build.gradle` file:
 
 ```groovy
-compile 'com.inuker.bluetooth:library:1.1.4'
+implementation 'com.github.g19980115:Android-BluetoothKit:1.4.1'
 ```
 
 2、Create a BluetoothClient as below: 
@@ -40,8 +40,8 @@ This library support both Bluetooth LE device scan and Classic device scan, you 
 ```Java
 SearchRequest request = new SearchRequest.Builder()
         .searchBluetoothLeDevice(3000, 3)   // scan Bluetooth LE device for 3000ms, 3 times
-        .searchBluetoothClassicDevice(5000) // then scan Bluetooth Classic device for 5000ms, 1 time
-        .searchBluetoothLeDevice(2000)      // at last scan Bluetooth LE device for 2000ms
+        //.searchBluetoothClassicDevice(5000) // then scan Bluetooth Classic device for 5000ms, 1 time
+        //.searchBluetoothLeDevice(2000)      // at last scan Bluetooth LE device for 2000ms
         .build();
 
 mClient.search(request, new SearchResponse() {
