@@ -56,7 +56,7 @@ public class BluetoothSearchHelper implements IBluetoothSearchHelper, ProxyInter
         }
     }
 
-    public class BluetoothSearchResponseImpl implements BluetoothSearchResponse {
+    private class BluetoothSearchResponseImpl implements BluetoothSearchResponse {
 
         BluetoothSearchResponse response;
 
@@ -97,7 +97,7 @@ public class BluetoothSearchHelper implements IBluetoothSearchHelper, ProxyInter
 
     @Override
     public boolean onIntercept(Object object, Method method, Object[] args) {
-        mHandler.obtainMessage(0, new ProxyBulk(object, method,args)).sendToTarget();
+        mHandler.obtainMessage(0, new ProxyBulk(object, method, args)).sendToTarget();
         return true;
     }
 
