@@ -62,6 +62,7 @@ public abstract class BleRequest implements IBleConnectWorker, IBleRequest, Hand
 
     /**
      * 请求完成回调，要避免多次回调
+     *
      * @param code
      */
     public void onResponse(final int code) {
@@ -72,17 +73,13 @@ public abstract class BleRequest implements IBleConnectWorker, IBleRequest, Hand
             mFinished = true;
         }
 
-        mResponseHandler.post(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    if (mResponse != null) {
-                        mResponse.onResponse(code, mExtra);
-                    }
-                } catch (Throwable e) {
-                    e.printStackTrace();
+        mResponseHandler.post(() -> {
+            try {
+                if (mResponse != null) {
+                    mResponse.onResponse(code, mExtra);
                 }
+            } catch (Throwable e) {
+                e.printStackTrace();
             }
         });
     }
@@ -90,9 +87,7 @@ public abstract class BleRequest implements IBleConnectWorker, IBleRequest, Hand
     @Override
     public String toString() {
         // TODO Auto-generated method stub
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName());
-        return sb.toString();
+        return getClass().getSimpleName();
     }
 
     public void putIntExtra(String key, int value) {
@@ -184,17 +179,15 @@ public abstract class BleRequest implements IBleConnectWorker, IBleRequest, Hand
 
     @Override
     public void closeGatt() {
-        log(String.format("close gatt"));
+        log("close gatt");
         mWorker.closeGatt();
     }
 
     @Override
     public boolean handleMessage(Message msg) {
-        switch (msg.what) {
-            case MSG_REQUEST_TIMEOUT:
-                mRequestTimeout = true;
-                closeGatt();
-                break;
+        if (msg.what == MSG_REQUEST_TIMEOUT) {
+            mRequestTimeout = true;
+            closeGatt();
         }
         return true;
     }
@@ -271,7 +264,7 @@ public abstract class BleRequest implements IBleConnectWorker, IBleRequest, Hand
     public void cancel() {
         checkRuntime();
 
-        log(String.format("request canceled"));
+        log("request canceled");
 
         mHandler.removeCallbacksAndMessages(null);
         clearGattResponseListener(this);

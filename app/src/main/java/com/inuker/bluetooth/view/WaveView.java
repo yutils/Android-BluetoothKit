@@ -94,7 +94,7 @@ public class WaveView extends View {
          */
         private int axisStrokeWidth = 2;
         /**
-         *  轴突标注字体大小
+         * 轴突标注字体大小
          */
         private int axisSize = 20;
 
@@ -108,7 +108,7 @@ public class WaveView extends View {
             Config config = new Config();
 
             public Builder setBackgroundColor(int color) {
-                config.backgroundColor= color;
+                config.backgroundColor = color;
                 return this;
             }
 
@@ -162,7 +162,7 @@ public class WaveView extends View {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        BluetoothLog.e(String.format("onAttachedToWindow"));
+        BluetoothLog.e("onAttachedToWindow");
         setWaveSize(getWidth(), getHeight());
     }
 

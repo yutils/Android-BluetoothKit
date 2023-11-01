@@ -35,7 +35,7 @@ public class BluetoothManagerBinderProxyHandler implements InvocationHandler {
 
         if ("queryLocalInterface".equals(method.getName())) {
             return Proxy.newProxyInstance(proxy.getClass().getClassLoader(),
-                    new Class<?>[] {IBinder.class, IInterface.class, iBluetoothManagerClaz},
+                    new Class<?>[]{IBinder.class, IInterface.class, iBluetoothManagerClaz},
                     new BluetoothManagerProxyHandler(iBluetoothManager));
         }
         return method.invoke(iBinder, args);

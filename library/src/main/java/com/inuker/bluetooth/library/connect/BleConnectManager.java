@@ -21,7 +21,7 @@ public class BleConnectManager {
     private static HandlerThread mWorkerThread;
 
     static {
-        mBleConnectMasters = new HashMap<String, IBleConnectMaster>();
+        mBleConnectMasters = new HashMap<>();
     }
 
     private static Looper getWorkerLooper() {

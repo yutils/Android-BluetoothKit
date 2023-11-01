@@ -85,7 +85,7 @@ public class BleConnectRequest extends BleRequest implements ServiceDiscoverList
     }
 
     private void onServiceDiscoverFailed() {
-        BluetoothLog.v(String.format("onServiceDiscoverFailed"));
+        BluetoothLog.v("onServiceDiscoverFailed");
         refreshDeviceCache();
         mHandler.sendEmptyMessage(MSG_RETRY_DISCOVER_SERVICE);
     }
@@ -113,25 +113,25 @@ public class BleConnectRequest extends BleRequest implements ServiceDiscoverList
     }
 
     private void retryConnectLater() {
-        log(String.format("retry connect later"));
+        log("retry connect later");
         mHandler.removeCallbacksAndMessages(null);
         mHandler.sendEmptyMessageDelayed(MSG_CONNECT, 1000);
     }
 
     private void retryDiscoverServiceLater() {
-        log(String.format("retry discover service later"));
+        log("retry discover service later");
         mHandler.removeCallbacksAndMessages(null);
         mHandler.sendEmptyMessageDelayed(MSG_DISCOVER_SERVICE, 1000);
     }
 
     private void processConnectTimeout() {
-        log(String.format("connect timeout"));
+        log("connect timeout");
         mHandler.removeCallbacksAndMessages(null);
         closeGatt();
     }
 
     private void processDiscoverServiceTimeout() {
-        log(String.format("service discover timeout"));
+        log("service discover timeout");
         mHandler.removeCallbacksAndMessages(null);
         closeGatt();
     }

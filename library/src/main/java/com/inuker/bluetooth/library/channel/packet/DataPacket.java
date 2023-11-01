@@ -11,73 +11,73 @@ import java.util.Arrays;
 
 public class DataPacket extends Packet {
 
-	private int seq;
+    private int seq;
 
-	private Bytes bytes;
+    private Bytes bytes;
 
-	// only last frame has crc
-	private byte[] crc;
+    // only last frame has crc
+    private byte[] crc;
 
-	public DataPacket(int seq, Bytes bytes) {
-		this.seq = seq;
-		this.bytes = bytes;
-	}
+    public DataPacket(int seq, Bytes bytes) {
+        this.seq = seq;
+        this.bytes = bytes;
+    }
 
-	public DataPacket(int seq, byte[] value, int start, int end) {
-		this(seq, new Bytes(value, start, end));
-	}
+    public DataPacket(int seq, byte[] value, int start, int end) {
+        this(seq, new Bytes(value, start, end));
+    }
 
-	public int getSeq() {
-		return seq;
-	}
+    public int getSeq() {
+        return seq;
+    }
 
-	public int getDataLength() {
-		return bytes.getSize();
-	}
+    public int getDataLength() {
+        return bytes.getSize();
+    }
 
-	@Override
-	public String getName() {
-		return DATA;
-	}
+    @Override
+    public String getName() {
+        return DATA;
+    }
 
-	public void setLastFrame() {
-		bytes.end -= 2;
-		crc = ByteUtils.get(bytes.value, bytes.end, 2);
-	}
+    public void setLastFrame() {
+        bytes.end -= 2;
+        crc = ByteUtils.get(bytes.value, bytes.end, 2);
+    }
 
-	public byte[] getCrc() {
-		return crc;
-	}
+    public byte[] getCrc() {
+        return crc;
+    }
 
-	@Override
-	public byte[] toBytes() {
-		ByteBuffer buffer;
+    @Override
+    public byte[] toBytes() {
+        ByteBuffer buffer;
 
-		int packetSize = getDataLength() + 2;
+        int packetSize = getDataLength() + 2;
 
-		if (packetSize == BUFFER_SIZE) {
-			Arrays.fill(BUFFER, (byte) 0);
-			buffer = ByteBuffer.wrap(BUFFER);
-		} else {
-			buffer = ByteBuffer.allocate(packetSize);
-		}
+        if (packetSize == BUFFER_SIZE) {
+            Arrays.fill(BUFFER, (byte) 0);
+            buffer = ByteBuffer.wrap(BUFFER);
+        } else {
+            buffer = ByteBuffer.allocate(packetSize);
+        }
 
-		buffer.putShort((short) seq);
-		fillByteBuffer(buffer);
+        buffer.putShort((short) seq);
+        fillByteBuffer(buffer);
 
-		return buffer.array();
-	}
+        return buffer.array();
+    }
 
-	public void fillByteBuffer(ByteBuffer buffer) {
-		buffer.put(bytes.value, bytes.start, getDataLength());
-	}
+    public void fillByteBuffer(ByteBuffer buffer) {
+        buffer.put(bytes.value, bytes.start, getDataLength());
+    }
 
-	@Override
-	public String toString() {
-		return "DataPacket{" +
-				"seq=" + seq +
-				", size=" + bytes.getSize() +
+    @Override
+    public String toString() {
+        return "DataPacket{" +
+                "seq=" + seq +
+                ", size=" + bytes.getSize() +
 //				", value=0x" + ByteUtils.byteToString(value) +
-				'}';
-	}
+                '}';
+    }
 }

@@ -20,13 +20,13 @@ public class BleGattProfile implements Parcelable {
 
     private List<BleGattService> services;
 
-    public BleGattProfile(Map< UUID, Map<UUID, BluetoothGattCharacteristic >> map) {
-        Iterator itor = map.entrySet().iterator();
+    public BleGattProfile(Map<UUID, Map<UUID, BluetoothGattCharacteristic>> map) {
+        Iterator<Map.Entry<UUID, Map<UUID, BluetoothGattCharacteristic>>> itor = map.entrySet().iterator();
 
-        List<BleGattService> serviceList = new ArrayList<BleGattService>();
+        List<BleGattService> serviceList = new ArrayList<>();
 
         while (itor.hasNext()) {
-            Map.Entry entry = (Map.Entry) itor.next();
+            Map.Entry<UUID, Map<UUID, BluetoothGattCharacteristic>> entry = itor.next();
             UUID serviceUUID = (UUID) entry.getKey();
             Map<UUID, BluetoothGattCharacteristic> characters = (Map<UUID, BluetoothGattCharacteristic>) entry.getValue();
 
@@ -50,7 +50,7 @@ public class BleGattProfile implements Parcelable {
 
     public List<BleGattService> getServices() {
         if (services == null) {
-            services = new ArrayList<BleGattService>();
+            services = new ArrayList<>();
         }
         return services;
     }
@@ -78,7 +78,7 @@ public class BleGattProfile implements Parcelable {
         BleGattService service = getService(serviceId);
         if (service != null) {
             List<BleGattCharacter> characters = service.getCharacters();
-            if (!ListUtils.isEmpty(characters)) {
+            if (ListUtils.isEmpty(characters)) {
                 for (BleGattCharacter character : characters) {
                     if (characterId.equals(character.getUuid())) {
                         return true;

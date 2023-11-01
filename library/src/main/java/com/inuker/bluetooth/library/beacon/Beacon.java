@@ -15,7 +15,7 @@ public class Beacon {
     public List<BeaconItem> mItems;
 
     public Beacon(byte[] scanRecord) {
-        mItems = new LinkedList<BeaconItem>();
+        mItems = new LinkedList<>();
         if (!ByteUtils.isEmpty(scanRecord)) {
             mBytes = ByteUtils.trimLast(scanRecord);
             mItems.addAll(BeaconParser.parseBeacon(mBytes));

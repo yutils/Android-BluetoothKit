@@ -55,11 +55,16 @@ public class BluetoothStateReceiver extends AbsBluetoothReceiver {
 
     private String getStateString(int state) {
         switch (state) {
-            case BluetoothAdapter.STATE_ON: return "state_on";
-            case BluetoothAdapter.STATE_OFF: return "state_off";
-            case BluetoothAdapter.STATE_TURNING_OFF: return "state_turning_off";
-            case BluetoothAdapter.STATE_TURNING_ON: return "state_turning_on";
-            default: return "unknown";
+            case BluetoothAdapter.STATE_ON:
+                return "state_on";
+            case BluetoothAdapter.STATE_OFF:
+                return "state_off";
+            case BluetoothAdapter.STATE_TURNING_OFF:
+                return "state_turning_off";
+            case BluetoothAdapter.STATE_TURNING_ON:
+                return "state_turning_on";
+            default:
+                return "unknown";
         }
     }
 }

@@ -47,9 +47,7 @@ public class HookUtils {
     public static <T> T invoke(Method method, Object object, Object... parameters) {
         try {
             return (T) method.invoke(object, parameters);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
         return null;

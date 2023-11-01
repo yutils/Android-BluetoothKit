@@ -14,175 +14,168 @@ import java.util.List;
 
 public class BluetoothSearchRequest implements Handler.Callback {
 
-	private static final int SCAN_INTERVAL = 100;
-	
-	private static final int MSG_START_SEARCH = 0x11;
-	private static final int MSG_DEVICE_FOUND = 0x12;
+    private static final int SCAN_INTERVAL = 100;
 
-	private List<BluetoothSearchTask> mSearchTaskList;
-	private BluetoothSearchResponse mSearchResponse;
+    private static final int MSG_START_SEARCH = 0x11;
+    private static final int MSG_DEVICE_FOUND = 0x12;
 
-	private BluetoothSearchTask mCurrentTask;
+    private List<BluetoothSearchTask> mSearchTaskList;
+    private BluetoothSearchResponse mSearchResponse;
 
-	private Handler mHandler;
+    private BluetoothSearchTask mCurrentTask;
 
-	public BluetoothSearchRequest(SearchRequest request) {
-		mSearchTaskList = new ArrayList<BluetoothSearchTask>();
-		List<SearchTask> tasks = request.getTasks();
-		for (SearchTask task : tasks) {
-			mSearchTaskList.add(new BluetoothSearchTask(task));
-		}
+    private Handler mHandler;
 
-		mHandler = new Handler(Looper.myLooper(), this);
-	}
+    public BluetoothSearchRequest(SearchRequest request) {
+        mSearchTaskList = new ArrayList<>();
+        List<SearchTask> tasks = request.getTasks();
+        for (SearchTask task : tasks) {
+            mSearchTaskList.add(new BluetoothSearchTask(task));
+        }
 
-	public void setSearchResponse(BluetoothSearchResponse response) {
-		mSearchResponse = response;
-	}
+        mHandler = new Handler(Looper.myLooper(), this);
+    }
 
-	public void start() {
-		if (mSearchResponse != null) {
-			mSearchResponse.onSearchStarted();
-		}
+    public void setSearchResponse(BluetoothSearchResponse response) {
+        mSearchResponse = response;
+    }
 
-		notifyConnectedBluetoothDevices();
+    public void start() {
+        if (mSearchResponse != null) {
+            mSearchResponse.onSearchStarted();
+        }
 
-		mHandler.sendEmptyMessageDelayed(MSG_START_SEARCH, SCAN_INTERVAL);
-	}
+        notifyConnectedBluetoothDevices();
 
-	@Override
-	public boolean handleMessage(Message msg) {
-		switch (msg.what) {
-			case MSG_START_SEARCH:
-				scheduleNewSearchTask();
-				break;
+        mHandler.sendEmptyMessageDelayed(MSG_START_SEARCH, SCAN_INTERVAL);
+    }
 
-			case MSG_DEVICE_FOUND:
-				SearchResult device = (SearchResult) msg.obj;
-				if (mSearchResponse != null) {
-					mSearchResponse.onDeviceFounded(device);
-				}
-				break;
-		}
-		return true;
-	}
+    @Override
+    public boolean handleMessage(Message msg) {
+        switch (msg.what) {
+            case MSG_START_SEARCH:
+                scheduleNewSearchTask();
+                break;
 
-	private void scheduleNewSearchTask() {
-		if (mSearchTaskList.size() > 0) {
-			mCurrentTask = mSearchTaskList.remove(0);
-			mCurrentTask.start(new BluetoothSearchTaskResponse(mCurrentTask));
-		} else {
-			mCurrentTask = null;
-			
-			if (mSearchResponse != null) {
-				mSearchResponse.onSearchStopped();
-			}
-		}
-	}
-	
-	public void cancel() {
-		if (mCurrentTask != null) {
-			mCurrentTask.cancel();
-			mCurrentTask = null;
-		}
-		
-		mSearchTaskList.clear();
-		
-		if (mSearchResponse != null) {
-			mSearchResponse.onSearchCanceled();
-		}
+            case MSG_DEVICE_FOUND:
+                SearchResult device = (SearchResult) msg.obj;
+                if (mSearchResponse != null) {
+                    mSearchResponse.onDeviceFounded(device);
+                }
+                break;
+        }
+        return true;
+    }
 
-		mSearchResponse = null;
-	}
+    private void scheduleNewSearchTask() {
+        if (mSearchTaskList.size() > 0) {
+            mCurrentTask = mSearchTaskList.remove(0);
+            mCurrentTask.start(new BluetoothSearchTaskResponse(mCurrentTask));
+        } else {
+            mCurrentTask = null;
 
-	private void notifyConnectedBluetoothDevices() {
-		boolean hasBleTask = false;
-		boolean hasBscTask = false;
+            if (mSearchResponse != null) {
+                mSearchResponse.onSearchStopped();
+            }
+        }
+    }
 
-		for (BluetoothSearchTask task : mSearchTaskList) {
-			if (task.isBluetoothLeSearch()) {
-				hasBleTask = true;
-			} else if (task.isBluetoothClassicSearch()) {
-				hasBscTask = true;
-			} else {
-				throw new IllegalArgumentException("unknown search task type!");
-			}
-		}
+    public void cancel() {
+        if (mCurrentTask != null) {
+            mCurrentTask.cancel();
+            mCurrentTask = null;
+        }
 
-		if (hasBleTask) {
-			notifyConnectedBluetoothLeDevices();
-		}
+        mSearchTaskList.clear();
 
-		if (hasBscTask) {
-			notifyBondedBluetoothClassicDevices();
-		}
-	}
+        if (mSearchResponse != null) {
+            mSearchResponse.onSearchCanceled();
+        }
 
-	private void notifyConnectedBluetoothLeDevices() {
-		List<BluetoothDevice> devices = BluetoothUtils.getConnectedBluetoothLeDevices();
+        mSearchResponse = null;
+    }
 
-		for (BluetoothDevice device : devices) {
-			notifyDeviceFounded(new SearchResult(device));
-		}
-	}
+    private void notifyConnectedBluetoothDevices() {
+        boolean hasBleTask = false;
+        boolean hasBscTask = false;
 
-	private void notifyBondedBluetoothClassicDevices() {
-		List<BluetoothDevice> devices = BluetoothUtils.getBondedBluetoothClassicDevices();
+        for (BluetoothSearchTask task : mSearchTaskList) {
+            if (task.isBluetoothLeSearch()) {
+                hasBleTask = true;
+            } else if (task.isBluetoothClassicSearch()) {
+                hasBscTask = true;
+            } else {
+                throw new IllegalArgumentException("unknown search task type!");
+            }
+        }
 
-		for (BluetoothDevice device : devices) {
-			notifyDeviceFounded(new SearchResult(device));
-		}
-	}
+        if (hasBleTask) {
+            notifyConnectedBluetoothLeDevices();
+        }
 
-	private void notifyDeviceFounded(SearchResult device) {
-		mHandler.obtainMessage(MSG_DEVICE_FOUND, device).sendToTarget();
-	}
+        if (hasBscTask) {
+            notifyBondedBluetoothClassicDevices();
+        }
+    }
 
-	private class BluetoothSearchTaskResponse implements BluetoothSearchResponse {
+    private void notifyConnectedBluetoothLeDevices() {
+        List<BluetoothDevice> devices = BluetoothUtils.getConnectedBluetoothLeDevices();
 
-		BluetoothSearchTask task;
+        for (BluetoothDevice device : devices) {
+            notifyDeviceFounded(new SearchResult(device));
+        }
+    }
 
-		BluetoothSearchTaskResponse(BluetoothSearchTask task) {
-			this.task = task;
-		}
+    private void notifyBondedBluetoothClassicDevices() {
+        List<BluetoothDevice> devices = BluetoothUtils.getBondedBluetoothClassicDevices();
 
-		@Override
-		public void onSearchStarted() {
-			// TODO Auto-generated method stub
-			BluetoothLog.v(String.format("%s onSearchStarted", task));
-		}
+        for (BluetoothDevice device : devices) {
+            notifyDeviceFounded(new SearchResult(device));
+        }
+    }
 
-		@Override
-		public void onDeviceFounded(SearchResult device) {
-			// TODO Auto-generated method stub
-			BluetoothLog.v(String.format("onDeviceFounded %s", device));
-			notifyDeviceFounded(device);
-		}
+    private void notifyDeviceFounded(SearchResult device) {
+        mHandler.obtainMessage(MSG_DEVICE_FOUND, device).sendToTarget();
+    }
 
-		@Override
-		public void onSearchStopped() {
-			// TODO Auto-generated method stub
-			BluetoothLog.v(String.format("%s onSearchStopped", task));
-			mHandler.sendEmptyMessageDelayed(MSG_START_SEARCH, SCAN_INTERVAL);
-		}
+    private class BluetoothSearchTaskResponse implements BluetoothSearchResponse {
 
-		@Override
-		public void onSearchCanceled() {
-			// TODO Auto-generated method stub
-			BluetoothLog.v(String.format("%s onSearchCanceled", task));
-		}
+        BluetoothSearchTask task;
 
-	}
+        BluetoothSearchTaskResponse(BluetoothSearchTask task) {
+            this.task = task;
+        }
 
-	@Override
-	public String toString() {
-		// TODO Auto-generated method stub
-		StringBuilder sb = new StringBuilder();
-		
-		for (BluetoothSearchTask task : mSearchTaskList) {
-			sb.append(task.toString() + ", ");
-		}
-		
-		return sb.toString();
-	}
+        @Override
+        public void onSearchStarted() {
+            BluetoothLog.v(String.format("%s onSearchStarted", task));
+        }
+
+        @Override
+        public void onDeviceFounded(SearchResult device) {
+            BluetoothLog.v(String.format("onDeviceFounded %s", device));
+            notifyDeviceFounded(device);
+        }
+
+        @Override
+        public void onSearchStopped() {
+            BluetoothLog.v(String.format("%s onSearchStopped", task));
+            mHandler.sendEmptyMessageDelayed(MSG_START_SEARCH, SCAN_INTERVAL);
+        }
+
+        @Override
+        public void onSearchCanceled() {
+            BluetoothLog.v(String.format("%s onSearchCanceled", task));
+        }
+
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (BluetoothSearchTask task : mSearchTaskList) {
+            sb.append(task.toString()).append(", ");
+        }
+        return sb.toString();
+    }
 }

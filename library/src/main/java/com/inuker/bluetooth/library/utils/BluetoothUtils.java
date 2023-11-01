@@ -1,5 +1,6 @@
 package com.inuker.bluetooth.library.utils;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -90,6 +91,7 @@ public class BluetoothUtils {
         return adapter != null ? adapter.getState() : 0;
     }
 
+    @SuppressLint("MissingPermission")
     public static boolean openBluetooth() {
         BluetoothAdapter adapter = getBluetoothAdapter();
         if (adapter != null) {
@@ -98,6 +100,7 @@ public class BluetoothUtils {
         return false;
     }
 
+    @SuppressLint("MissingPermission")
     public static boolean closeBluetooth() {
         BluetoothAdapter adapter = getBluetoothAdapter();
         if (adapter != null) {
@@ -134,9 +137,10 @@ public class BluetoothUtils {
         return null;
     }
 
+    @SuppressLint("MissingPermission")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public static List<android.bluetooth.BluetoothDevice> getConnectedBluetoothLeDevices() {
-        List<android.bluetooth.BluetoothDevice> devices = new ArrayList<android.bluetooth.BluetoothDevice>();
+        List<android.bluetooth.BluetoothDevice> devices = new ArrayList<>();
 
         BluetoothManager manager = getBluetoothManager();
 
@@ -147,6 +151,7 @@ public class BluetoothUtils {
         return devices;
     }
 
+    @SuppressLint("MissingPermission")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public static int getConnectStatus(String mac) {
         BluetoothManager manager = getBluetoothManager();
@@ -161,6 +166,7 @@ public class BluetoothUtils {
         return Constants.STATUS_UNKNOWN;
     }
 
+    @SuppressLint("MissingPermission")
     public static int getBondState(String mac) {
         BluetoothManager manager = getBluetoothManager();
         if (manager != null) {
@@ -176,9 +182,9 @@ public class BluetoothUtils {
 
     public static List<BluetoothDevice> getBondedBluetoothClassicDevices() {
         BluetoothAdapter adapter = getBluetoothAdapter();
-        List<BluetoothDevice> devices = new ArrayList<BluetoothDevice>();
+        List<BluetoothDevice> devices = new ArrayList<>();
         if (adapter != null) {
-            Set<BluetoothDevice> sets = adapter.getBondedDevices();
+            @SuppressLint("MissingPermission") Set<BluetoothDevice> sets = adapter.getBondedDevices();
             if (sets != null) {
                 devices.addAll(sets);
             }
@@ -186,6 +192,7 @@ public class BluetoothUtils {
         return devices;
     }
 
+    @SuppressLint("MissingPermission")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public static boolean isDeviceConnected(String mac) {
         if (!TextUtils.isEmpty(mac) && isBleSupported()) {

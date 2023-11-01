@@ -50,7 +50,7 @@ public class BleConnectDispatcher implements IBleConnectDispatcher, RuntimeCheck
 
     private BleConnectDispatcher(String mac) {
         mAddress = mac;
-        mBleWorkList = new LinkedList<BleRequest>();
+        mBleWorkList = new LinkedList<>();
         mWorker = new BleConnectWorker(mac, this);
         mHandler = new Handler(Looper.myLooper(), this);
     }
@@ -62,7 +62,7 @@ public class BleConnectDispatcher implements IBleConnectDispatcher, RuntimeCheck
     public void disconnect() {
         checkRuntime();
 
-        BluetoothLog.w(String.format("Process disconnect"));
+        BluetoothLog.w("Process disconnect");
 
         if (mCurrentRequest != null) {
             mCurrentRequest.cancel();
@@ -87,7 +87,7 @@ public class BleConnectDispatcher implements IBleConnectDispatcher, RuntimeCheck
 
         BluetoothLog.w(String.format("clearRequest %d", clearType));
 
-        List<BleRequest> requestClear = new LinkedList<BleRequest>();
+        List<BleRequest> requestClear = new LinkedList<>();
 
         if (clearType == 0) {
             requestClear.addAll(mBleWorkList);
@@ -206,7 +206,7 @@ public class BleConnectDispatcher implements IBleConnectDispatcher, RuntimeCheck
             return;
         }
 
-        if (!ListUtils.isEmpty(mBleWorkList)) {
+        if (ListUtils.isEmpty(mBleWorkList)) {
             mCurrentRequest = mBleWorkList.remove(0);
             mCurrentRequest.process(this);
         }
@@ -221,10 +221,8 @@ public class BleConnectDispatcher implements IBleConnectDispatcher, RuntimeCheck
 
     @Override
     public boolean handleMessage(Message msg) {
-        switch (msg.what) {
-            case MSG_SCHEDULE_NEXT:
-                scheduleNextRequest();
-                break;
+        if (msg.what == MSG_SCHEDULE_NEXT) {
+            scheduleNextRequest();
         }
         return true;
     }

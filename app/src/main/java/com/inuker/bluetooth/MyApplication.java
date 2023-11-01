@@ -1,7 +1,6 @@
 package com.inuker.bluetooth;
 
 import android.app.Application;
-import android.os.Handler;
 
 import com.inuker.bluetooth.library.BluetoothContext;
 

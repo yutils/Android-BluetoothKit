@@ -1,5 +1,6 @@
 package com.inuker.bluetooth.library.search;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -27,7 +28,7 @@ public class SearchResult implements Parcelable {
     }
 
     public String getName() {
-        String name = device.getName();
+        @SuppressLint("MissingPermission") String name = device.getName();
         return TextUtils.isEmpty(name) ? "NULL" : name;
     }
 
@@ -38,9 +39,7 @@ public class SearchResult implements Parcelable {
     @Override
     public String toString() {
         // TODO Auto-generated method stub
-        StringBuilder sb = new StringBuilder();
-        sb.append(", mac = " + device.getAddress());
-        return sb.toString();
+        return ", mac = " + device.getAddress();
     }
 
     @Override

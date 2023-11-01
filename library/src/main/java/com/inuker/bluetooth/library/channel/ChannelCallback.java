@@ -6,5 +6,5 @@ package com.inuker.bluetooth.library.channel;
 
 public interface ChannelCallback {
 
-	void onCallback(int code);
+    void onCallback(int code);
 }

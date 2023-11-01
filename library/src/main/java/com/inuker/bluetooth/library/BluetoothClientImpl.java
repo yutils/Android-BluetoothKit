@@ -1,52 +1,5 @@
 package com.inuker.bluetooth.library;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Handler.Callback;
-import android.os.HandlerThread;
-import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
-
-import com.inuker.bluetooth.library.connect.listener.BleConnectStatusListener;
-import com.inuker.bluetooth.library.connect.options.BleConnectOptions;
-import com.inuker.bluetooth.library.connect.response.BleConnectResponse;
-import com.inuker.bluetooth.library.connect.response.BleMtuResponse;
-import com.inuker.bluetooth.library.connect.response.BleNotifyResponse;
-import com.inuker.bluetooth.library.connect.response.BleReadResponse;
-import com.inuker.bluetooth.library.connect.response.BleReadRssiResponse;
-import com.inuker.bluetooth.library.connect.response.BleUnnotifyResponse;
-import com.inuker.bluetooth.library.connect.response.BleWriteResponse;
-import com.inuker.bluetooth.library.connect.response.BluetoothResponse;
-import com.inuker.bluetooth.library.model.BleGattProfile;
-import com.inuker.bluetooth.library.receiver.BluetoothReceiver;
-import com.inuker.bluetooth.library.receiver.listener.BleCharacterChangeListener;
-import com.inuker.bluetooth.library.receiver.listener.BleConnectStatusChangeListener;
-import com.inuker.bluetooth.library.receiver.listener.BluetoothBondListener;
-import com.inuker.bluetooth.library.receiver.listener.BluetoothBondStateChangeListener;
-import com.inuker.bluetooth.library.receiver.listener.BluetoothStateChangeListener;
-import com.inuker.bluetooth.library.connect.listener.BluetoothStateListener;
-import com.inuker.bluetooth.library.search.SearchRequest;
-import com.inuker.bluetooth.library.search.SearchResult;
-import com.inuker.bluetooth.library.search.response.SearchResponse;
-import com.inuker.bluetooth.library.utils.BluetoothLog;
-import com.inuker.bluetooth.library.utils.ListUtils;
-import com.inuker.bluetooth.library.utils.proxy.ProxyBulk;
-import com.inuker.bluetooth.library.utils.proxy.ProxyInterceptor;
-import com.inuker.bluetooth.library.utils.proxy.ProxyUtils;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
-
 import static com.inuker.bluetooth.library.Constants.CODE_CLEAR_REQUEST;
 import static com.inuker.bluetooth.library.Constants.CODE_CONNECT;
 import static com.inuker.bluetooth.library.Constants.CODE_DISCONNECT;
@@ -56,6 +9,7 @@ import static com.inuker.bluetooth.library.Constants.CODE_READ;
 import static com.inuker.bluetooth.library.Constants.CODE_READ_DESCRIPTOR;
 import static com.inuker.bluetooth.library.Constants.CODE_READ_RSSI;
 import static com.inuker.bluetooth.library.Constants.CODE_REFRESH_CACHE;
+import static com.inuker.bluetooth.library.Constants.CODE_REQUEST_MTU;
 import static com.inuker.bluetooth.library.Constants.CODE_REQUEST_PRIORITY;
 import static com.inuker.bluetooth.library.Constants.CODE_SEARCH;
 import static com.inuker.bluetooth.library.Constants.CODE_STOP_SESARCH;
@@ -77,13 +31,59 @@ import static com.inuker.bluetooth.library.Constants.EXTRA_RSSI;
 import static com.inuker.bluetooth.library.Constants.EXTRA_SEARCH_RESULT;
 import static com.inuker.bluetooth.library.Constants.EXTRA_SERVICE_UUID;
 import static com.inuker.bluetooth.library.Constants.EXTRA_TYPE;
+import static com.inuker.bluetooth.library.Constants.GATT_DEF_BLE_MTU_SIZE;
 import static com.inuker.bluetooth.library.Constants.REQUEST_SUCCESS;
 import static com.inuker.bluetooth.library.Constants.SEARCH_CANCEL;
 import static com.inuker.bluetooth.library.Constants.SEARCH_START;
 import static com.inuker.bluetooth.library.Constants.SEARCH_STOP;
 import static com.inuker.bluetooth.library.Constants.SERVICE_UNREADY;
-import static com.inuker.bluetooth.library.Constants.CODE_REQUEST_MTU;
-import static com.inuker.bluetooth.library.Constants.GATT_DEF_BLE_MTU_SIZE;
+
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Handler.Callback;
+import android.os.HandlerThread;
+import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
+
+import com.inuker.bluetooth.library.connect.listener.BleConnectStatusListener;
+import com.inuker.bluetooth.library.connect.listener.BluetoothStateListener;
+import com.inuker.bluetooth.library.connect.options.BleConnectOptions;
+import com.inuker.bluetooth.library.connect.response.BleConnectResponse;
+import com.inuker.bluetooth.library.connect.response.BleMtuResponse;
+import com.inuker.bluetooth.library.connect.response.BleNotifyResponse;
+import com.inuker.bluetooth.library.connect.response.BleReadResponse;
+import com.inuker.bluetooth.library.connect.response.BleReadRssiResponse;
+import com.inuker.bluetooth.library.connect.response.BleUnnotifyResponse;
+import com.inuker.bluetooth.library.connect.response.BleWriteResponse;
+import com.inuker.bluetooth.library.connect.response.BluetoothResponse;
+import com.inuker.bluetooth.library.model.BleGattProfile;
+import com.inuker.bluetooth.library.receiver.BluetoothReceiver;
+import com.inuker.bluetooth.library.receiver.listener.BleCharacterChangeListener;
+import com.inuker.bluetooth.library.receiver.listener.BleConnectStatusChangeListener;
+import com.inuker.bluetooth.library.receiver.listener.BluetoothBondListener;
+import com.inuker.bluetooth.library.receiver.listener.BluetoothBondStateChangeListener;
+import com.inuker.bluetooth.library.receiver.listener.BluetoothStateChangeListener;
+import com.inuker.bluetooth.library.search.SearchRequest;
+import com.inuker.bluetooth.library.search.SearchResult;
+import com.inuker.bluetooth.library.search.response.SearchResponse;
+import com.inuker.bluetooth.library.utils.BluetoothLog;
+import com.inuker.bluetooth.library.utils.ListUtils;
+import com.inuker.bluetooth.library.utils.proxy.ProxyBulk;
+import com.inuker.bluetooth.library.utils.proxy.ProxyInterceptor;
+import com.inuker.bluetooth.library.utils.proxy.ProxyUtils;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by dingjikerbo on 16/4/8.
@@ -120,10 +120,10 @@ public class BluetoothClientImpl implements IBluetoothClient, ProxyInterceptor, 
 
         mWorkerHandler = new Handler(mWorkerThread.getLooper(), this);
 
-        mNotifyResponses = new HashMap<String, HashMap<String, List<BleNotifyResponse>>>();
-        mConnectStatusListeners = new HashMap<String, List<BleConnectStatusListener>>();
-        mBluetoothStateListeners = new LinkedList<BluetoothStateListener>();
-        mBluetoothBondListeners = new LinkedList<BluetoothBondListener>();
+        mNotifyResponses = new HashMap<>();
+        mConnectStatusListeners = new HashMap<>();
+        mBluetoothStateListeners = new LinkedList<>();
+        mBluetoothBondListeners = new LinkedList<>();
 
         mWorkerHandler.obtainMessage(MSG_REG_RECEIVER).sendToTarget();
 
@@ -215,7 +215,7 @@ public class BluetoothClientImpl implements IBluetoothClient, ProxyInterceptor, 
         checkRuntime(true);
         List<BleConnectStatusListener> listeners = mConnectStatusListeners.get(mac);
         if (listeners == null) {
-            listeners = new ArrayList<BleConnectStatusListener>();
+            listeners = new ArrayList<>();
             mConnectStatusListeners.put(mac, listeners);
         }
         if (listener != null && !listeners.contains(listener)) {
@@ -227,7 +227,7 @@ public class BluetoothClientImpl implements IBluetoothClient, ProxyInterceptor, 
     public void unregisterConnectStatusListener(String mac, BleConnectStatusListener listener) {
         checkRuntime(true);
         List<BleConnectStatusListener> listeners = mConnectStatusListeners.get(mac);
-        if (listener != null && !ListUtils.isEmpty(listeners)) {
+        if (listener != null && ListUtils.isEmpty(listeners)) {
             listeners.remove(listener);
         }
     }
@@ -326,14 +326,14 @@ public class BluetoothClientImpl implements IBluetoothClient, ProxyInterceptor, 
         checkRuntime(true);
         HashMap<String, List<BleNotifyResponse>> listenerMap = mNotifyResponses.get(mac);
         if (listenerMap == null) {
-            listenerMap = new HashMap<String, List<BleNotifyResponse>>();
+            listenerMap = new HashMap<>();
             mNotifyResponses.put(mac, listenerMap);
         }
 
         String key = generateCharacterKey(service, character);
         List<BleNotifyResponse> responses = listenerMap.get(key);
         if (responses == null) {
-            responses = new ArrayList<BleNotifyResponse>();
+            responses = new ArrayList<>();
             listenerMap.put(key, responses);
         }
 
@@ -666,7 +666,7 @@ public class BluetoothClientImpl implements IBluetoothClient, ProxyInterceptor, 
     private void dispatchConnectionStatus(final String mac, final int status) {
         checkRuntime(true);
         List<BleConnectStatusListener> listeners = mConnectStatusListeners.get(mac);
-        if (!ListUtils.isEmpty(listeners)) {
+        if (ListUtils.isEmpty(listeners)) {
             for (final BleConnectStatusListener listener : listeners) {
                 listener.invokeSync(mac, status);
             }

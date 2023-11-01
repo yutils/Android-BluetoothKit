@@ -20,7 +20,7 @@ public class BluetoothSearchHelper implements IBluetoothSearchHelper, ProxyInter
 
     private BluetoothSearchRequest mCurrentRequest;
 
-    private static IBluetoothSearchHelper sInstance;
+    private static volatile IBluetoothSearchHelper sInstance;
 
     private Handler mHandler;
 

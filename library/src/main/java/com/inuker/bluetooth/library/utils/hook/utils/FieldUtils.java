@@ -15,7 +15,7 @@ public class FieldUtils {
         try {
             // only consider the specified class by using getDeclaredField()
             final Field field = cls.getDeclaredField(fieldName);
-            if (!MemberUtils.isAccessible(field)) {
+            if (MemberUtils.isAccessible(field)) {
                 if (forceAccess) {
                     field.setAccessible(true);
                 } else {

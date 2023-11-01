@@ -1,8 +1,8 @@
 package com.inuker.bluetooth.library.search.le;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter.LeScanCallback;
-import android.bluetooth.BluetoothDevice;
 import android.os.Build;
 
 import com.inuker.bluetooth.library.search.BluetoothSearcher;
@@ -16,58 +16,50 @@ import com.inuker.bluetooth.library.utils.BluetoothUtils;
  */
 public class BluetoothLESearcher extends BluetoothSearcher {
 
-	private BluetoothLESearcher() {
-		mBluetoothAdapter = BluetoothUtils.getBluetoothAdapter();
-	}
+    private BluetoothLESearcher() {
+        mBluetoothAdapter = BluetoothUtils.getBluetoothAdapter();
+    }
 
-	public static BluetoothLESearcher getInstance() {
-		return BluetoothLESearcherHolder.instance;
-	}
+    public static BluetoothLESearcher getInstance() {
+        return BluetoothLESearcherHolder.instance;
+    }
 
-	private static class BluetoothLESearcherHolder {
-		private static BluetoothLESearcher instance = new BluetoothLESearcher();
-	}
+    private static class BluetoothLESearcherHolder {
+        private static BluetoothLESearcher instance = new BluetoothLESearcher();
+    }
 
-	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-	@SuppressWarnings("deprecation")
-	@Override
-	public void startScanBluetooth(BluetoothSearchResponse response) {
-		// TODO Auto-generated method stub
-		super.startScanBluetooth(response);
-		
-		mBluetoothAdapter.startLeScan(mLeScanCallback);
-	}
+    @SuppressLint("MissingPermission")
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    @SuppressWarnings("deprecation")
+    @Override
+    public void startScanBluetooth(BluetoothSearchResponse response) {
+        super.startScanBluetooth(response);
 
-	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-	@SuppressWarnings("deprecation")
-	@Override
-	public void stopScanBluetooth() {
-		// TODO Auto-generated method stub
-		try {
-			mBluetoothAdapter.stopLeScan(mLeScanCallback);
-		} catch (Exception e) {
-			BluetoothLog.e(e);
-		}
+        mBluetoothAdapter.startLeScan(mLeScanCallback);
+    }
 
-		super.stopScanBluetooth();
-	}
-	
-	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-	@SuppressWarnings("deprecation")
-	@Override
-	protected void cancelScanBluetooth() {
-		// TODO Auto-generated method stub
-		mBluetoothAdapter.stopLeScan(mLeScanCallback);
-		super.cancelScanBluetooth();
-	}
+    @SuppressLint("MissingPermission")
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    @SuppressWarnings("deprecation")
+    @Override
+    public void stopScanBluetooth() {
+        try {
+            mBluetoothAdapter.stopLeScan(mLeScanCallback);
+        } catch (Exception e) {
+            BluetoothLog.e(e);
+        }
 
-	private final LeScanCallback mLeScanCallback = new LeScanCallback() {
+        super.stopScanBluetooth();
+    }
 
-		@Override
-		public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-			// TODO Auto-generated method stub
-            notifyDeviceFounded(new SearchResult(device, rssi, scanRecord));
-		}
-		
-	};
+    @SuppressLint("MissingPermission")
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    @SuppressWarnings("deprecation")
+    @Override
+    protected void cancelScanBluetooth() {
+        mBluetoothAdapter.stopLeScan(mLeScanCallback);
+        super.cancelScanBluetooth();
+    }
+
+    private final LeScanCallback mLeScanCallback = (device, rssi, scanRecord) -> notifyDeviceFounded(new SearchResult(device, rssi, scanRecord));
 }

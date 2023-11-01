@@ -6,5 +6,5 @@ package com.inuker.bluetooth.library.channel;
 
 public interface IChannelStateHandler {
 
-	void handleState(Object... args);
+    void handleState(Object... args);
 }

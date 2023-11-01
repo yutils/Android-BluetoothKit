@@ -92,7 +92,7 @@ public class BleGattCharacter implements Parcelable {
 
     public List<BleGattDescriptor> getDescriptors() {
         if (descriptors == null) {
-            descriptors = new ArrayList<BleGattDescriptor>();
+            descriptors = new ArrayList<>();
         }
         return descriptors;
     }

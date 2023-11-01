@@ -21,14 +21,14 @@ public class BluetoothService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        BluetoothLog.v(String.format("BluetoothService onCreate"));
+        BluetoothLog.v("BluetoothService onCreate");
         mContext = getApplicationContext();
         BluetoothContext.set(mContext);
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        BluetoothLog.v(String.format("BluetoothService onBind"));
+        BluetoothLog.v("BluetoothService onBind");
         return BluetoothServiceImpl.getInstance();
     }
 }

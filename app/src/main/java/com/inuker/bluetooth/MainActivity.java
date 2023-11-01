@@ -1,9 +1,13 @@
 package com.inuker.bluetooth;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.inuker.bluetooth.library.connect.listener.BluetoothStateListener;
 import com.inuker.bluetooth.library.search.SearchRequest;
@@ -16,57 +20,53 @@ import com.inuker.bluetooth.view.PullToRefreshFrameLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity {
-
-    private static final String MAC = "B0:D5:9D:6F:E7:A5";
-
+public class MainActivity extends AppCompatActivity {
     private PullToRefreshFrameLayout mRefreshLayout;
     private PullRefreshListView mListView;
     private DeviceListAdapter mAdapter;
     private TextView mTvTitle;
-
     private List<SearchResult> mDevices;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mDevices = new ArrayList<SearchResult>();
-
-        mTvTitle = (TextView) findViewById(R.id.title);
-
-        mRefreshLayout = (PullToRefreshFrameLayout) findViewById(R.id.pulllayout);
-
+        mDevices = new ArrayList<>();
+        mTvTitle = findViewById(R.id.title);
+        mRefreshLayout = findViewById(R.id.pulllayout);
         mListView = mRefreshLayout.getPullToRefreshListView();
         mAdapter = new DeviceListAdapter(this);
         mListView.setAdapter(mAdapter);
-
-        mListView.setOnRefreshListener(new PullRefreshListView.OnRefreshListener() {
-
-            @Override
-            public void onRefresh() {
-                // TODO Auto-generated method stub
-                searchDevice();
-            }
-
-        });
-
+        mListView.setOnRefreshListener(this::searchDevice);
         searchDevice();
-
         ClientManager.getClient().registerBluetoothStateListener(new BluetoothStateListener() {
             @Override
             public void onBluetoothStateChanged(boolean openOrClosed) {
                 BluetoothLog.v(String.format("onBluetoothStateChanged %b", openOrClosed));
             }
         });
+        //关闭日志输出
+        // BluetoothLog.isShowLog = false;
+
+        //打开APP后立即扫描一次
+        searchDevice();
     }
 
     private void searchDevice() {
-        SearchRequest request = new SearchRequest.Builder()
-                .searchBluetoothLeDevice(5000, 2).build();
-
-        ClientManager.getClient().search(request, mSearchResponse);
+        //获取权限
+        ActivityResultLauncher<String> arl = getActivityResultRegistry().register("123", new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
+            @Override
+            public void onActivityResult(Boolean result) {
+                if (result) {
+                    //获取权限后，立即进行扫描一次
+                    SearchRequest request = new SearchRequest.Builder().searchBluetoothLeDevice(5000, 2).build();
+                    ClientManager.getClient().search(request, mSearchResponse);
+                } else {
+                    Toast.makeText(MainActivity.this, "必须开启位置信息权限", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        arl.launch(android.Manifest.permission.ACCESS_FINE_LOCATION);
     }
 
     private final SearchResponse mSearchResponse = new SearchResponse() {
@@ -81,14 +81,11 @@ public class MainActivity extends Activity {
 
         @Override
         public void onDeviceFounded(SearchResult device) {
-//            BluetoothLog.w("MainActivity.onDeviceFounded " + device.device.getAddress());
             if (!mDevices.contains(device)) {
                 mDevices.add(device);
                 mAdapter.setDataList(mDevices);
-
 //                Beacon beacon = new Beacon(device.scanRecord);
 //                BluetoothLog.v(String.format("beacon for %s\n%s", device.getAddress(), beacon.toString()));
-
 //                BeaconItem beaconItem = null;
 //                BeaconParser beaconParser = new BeaconParser(beaconItem);
 //                int firstByte = beaconParser.readByte(); // 读取第1个字节
@@ -98,7 +95,6 @@ public class MainActivity extends Activity {
 //                boolean bit2 = beaconParser.getBit(firstByte, 1); // 获取第1字节的第2bit
 //                beaconParser.setPosition(0); // 将读取起点设置到第1字节处
             }
-
             if (mDevices.size() > 0) {
                 mRefreshLayout.showState(AppConstants.LIST);
             }
@@ -109,17 +105,14 @@ public class MainActivity extends Activity {
             BluetoothLog.w("MainActivity.onSearchStopped");
             mListView.onRefreshComplete(true);
             mRefreshLayout.showState(AppConstants.LIST);
-
             mTvTitle.setText(R.string.devices);
         }
 
         @Override
         public void onSearchCanceled() {
             BluetoothLog.w("MainActivity.onSearchCanceled");
-
             mListView.onRefreshComplete(true);
             mRefreshLayout.showState(AppConstants.LIST);
-
             mTvTitle.setText(R.string.devices);
         }
     };

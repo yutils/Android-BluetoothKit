@@ -1,5 +1,8 @@
 package com.inuker.bluetooth.library.search;
 
+import static com.inuker.bluetooth.library.Constants.SEARCH_TYPE_BLE;
+import static com.inuker.bluetooth.library.Constants.SEARCH_TYPE_CLASSIC;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -7,9 +10,6 @@ import com.inuker.bluetooth.library.utils.BluetoothUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.inuker.bluetooth.library.Constants.SEARCH_TYPE_BLE;
-import static com.inuker.bluetooth.library.Constants.SEARCH_TYPE_CLASSIC;
 
 /**
  * Created by dingjikerbo on 2016/8/28.
@@ -32,7 +32,7 @@ public class SearchRequest implements Parcelable {
     }
 
     protected SearchRequest(Parcel in) {
-        this.tasks = new ArrayList<SearchTask>();
+        this.tasks = new ArrayList<>();
         in.readTypedList(this.tasks, SearchTask.CREATOR);
     }
 
@@ -58,7 +58,7 @@ public class SearchRequest implements Parcelable {
         private List<SearchTask> tasks;
 
         public Builder() {
-            tasks = new ArrayList<SearchTask>();
+            tasks = new ArrayList<>();
         }
 
         public Builder searchBluetoothLeDevice(int duration) {

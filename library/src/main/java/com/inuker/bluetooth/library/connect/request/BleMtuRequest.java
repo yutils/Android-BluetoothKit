@@ -7,8 +7,6 @@ import com.inuker.bluetooth.library.Constants;
 import com.inuker.bluetooth.library.connect.listener.RequestMtuListener;
 import com.inuker.bluetooth.library.connect.response.BleGeneralResponse;
 
-import java.util.UUID;
-
 /**
  * Created by fuhao on 2017/8/24.
  */

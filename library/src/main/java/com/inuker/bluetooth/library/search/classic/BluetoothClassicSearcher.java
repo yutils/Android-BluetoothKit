@@ -1,5 +1,6 @@
 package com.inuker.bluetooth.library.search.classic;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,91 +15,74 @@ import com.inuker.bluetooth.library.utils.BluetoothUtils;
 /**
  * @author dingjikerbo
  */
+@SuppressLint("MissingPermission")
 public class BluetoothClassicSearcher extends BluetoothSearcher {
 
-	private BluetoothSearchReceiver mReceiver;
-	
-	private BluetoothClassicSearcher() {
-		mBluetoothAdapter = BluetoothUtils.getBluetoothAdapter();
-	}
+    private BluetoothSearchReceiver mReceiver;
 
-	public static BluetoothClassicSearcher getInstance() {
-		return BluetoothClassicSearcherHolder.instance;
-	}
+    private BluetoothClassicSearcher() {
+        mBluetoothAdapter = BluetoothUtils.getBluetoothAdapter();
+    }
 
-	private static class BluetoothClassicSearcherHolder {
-		private static BluetoothClassicSearcher instance = new BluetoothClassicSearcher();
-	}
+    public static BluetoothClassicSearcher getInstance() {
+        return BluetoothClassicSearcherHolder.instance;
+    }
 
-	@Override
-	public void startScanBluetooth(BluetoothSearchResponse callback) {
-		// TODO Auto-generated method stub
-		super.startScanBluetooth(callback);
+    private static class BluetoothClassicSearcherHolder {
+        private static BluetoothClassicSearcher instance = new BluetoothClassicSearcher();
+    }
 
-		registerReceiver();
+    @Override
+    public void startScanBluetooth(BluetoothSearchResponse callback) {
+        super.startScanBluetooth(callback);
+        registerReceiver();
+        if (mBluetoothAdapter.isDiscovering()) {
+            mBluetoothAdapter.cancelDiscovery();
+        }
+        mBluetoothAdapter.startDiscovery();
+    }
 
-		if (mBluetoothAdapter.isDiscovering()) {
-			mBluetoothAdapter.cancelDiscovery();
-		}
+    @Override
+    public void stopScanBluetooth() {
+        unregisterReceiver();
+        if (mBluetoothAdapter.isDiscovering()) {
+            mBluetoothAdapter.cancelDiscovery();
+        }
+        super.stopScanBluetooth();
+    }
 
-		mBluetoothAdapter.startDiscovery();
-	}
+    @Override
+    protected void cancelScanBluetooth() {
+        unregisterReceiver();
+        if (mBluetoothAdapter.isDiscovering()) {
+            mBluetoothAdapter.cancelDiscovery();
+        }
+        super.cancelScanBluetooth();
+    }
 
-	@Override
-	public void stopScanBluetooth() {
-		// TODO Auto-generated method stub
-		unregisterReceiver();
-		
-		if (mBluetoothAdapter.isDiscovering()) {
-			mBluetoothAdapter.cancelDiscovery();
-		}
+    private void registerReceiver() {
+        if (mReceiver == null) {
+            mReceiver = new BluetoothSearchReceiver();
+            BluetoothUtils.registerReceiver(mReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
+        }
+    }
 
-		super.stopScanBluetooth();
-	}
-	
-	@Override
-	protected void cancelScanBluetooth() {
-		// TODO Auto-generated method stub
-		unregisterReceiver();
-		
-		if (mBluetoothAdapter.isDiscovering()) {
-			mBluetoothAdapter.cancelDiscovery();
-		}
+    private void unregisterReceiver() {
+        if (mReceiver != null) {
+            BluetoothUtils.unregisterReceiver(mReceiver);
+            mReceiver = null;
+        }
+    }
 
-		super.cancelScanBluetooth();
-	}
-	
-	private void registerReceiver() {
-		if (mReceiver == null) {
-			mReceiver = new BluetoothSearchReceiver();
-			BluetoothUtils.registerReceiver(mReceiver,
-					new IntentFilter(BluetoothDevice.ACTION_FOUND));
-		}
-	}
-	
-	private void unregisterReceiver() {
-		if (mReceiver != null) {
-			BluetoothUtils.unregisterReceiver(mReceiver);
-			mReceiver = null;
-		}
-	}
-
-	private class BluetoothSearchReceiver extends BroadcastReceiver {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-
-			if (intent.getAction().equals(BluetoothDevice.ACTION_FOUND)) {
-				BluetoothDevice device = intent
-						.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				int rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI,
-						Short.MIN_VALUE);
-
-				SearchResult xmDevice = new SearchResult(device,
-						rssi, null);
-
-				notifyDeviceFounded(xmDevice);
-			}
-		}
-	};
+    private class BluetoothSearchReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(BluetoothDevice.ACTION_FOUND)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                int rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE);
+                SearchResult xmDevice = new SearchResult(device, rssi, null);
+                notifyDeviceFounded(xmDevice);
+            }
+        }
+    }
 }

@@ -6,7 +6,6 @@ import android.os.ParcelUuid;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -23,9 +22,7 @@ public class BleGattService implements Parcelable, Comparable {
     public BleGattService(UUID uuid, Map<UUID, BluetoothGattCharacteristic> characters) {
         this.uuid = new ParcelUuid(uuid);
 
-        Iterator<BluetoothGattCharacteristic> itor = characters.values().iterator();
-        while (itor.hasNext()) {
-            BluetoothGattCharacteristic characteristic = itor.next();
+        for (BluetoothGattCharacteristic characteristic : characters.values()) {
             getCharacters().add(new BleGattCharacter(characteristic));
         }
     }
@@ -54,7 +51,7 @@ public class BleGattService implements Parcelable, Comparable {
 
     public List<BleGattCharacter> getCharacters() {
         if (characters == null) {
-            characters = new ArrayList<BleGattCharacter>();
+            characters = new ArrayList<>();
         }
         return characters;
     }

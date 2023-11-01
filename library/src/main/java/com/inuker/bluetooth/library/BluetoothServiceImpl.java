@@ -1,20 +1,5 @@
 package com.inuker.bluetooth.library;
 
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.os.RemoteException;
-
-import com.inuker.bluetooth.library.connect.BleConnectManager;
-import com.inuker.bluetooth.library.connect.options.BleConnectOptions;
-import com.inuker.bluetooth.library.connect.response.BleGeneralResponse;
-import com.inuker.bluetooth.library.search.BluetoothSearchManager;
-import com.inuker.bluetooth.library.search.SearchRequest;
-import com.inuker.bluetooth.library.utils.BluetoothLog;
-
-import java.util.UUID;
-
 import static com.inuker.bluetooth.library.Constants.CODE_CLEAR_REQUEST;
 import static com.inuker.bluetooth.library.Constants.CODE_CONNECT;
 import static com.inuker.bluetooth.library.Constants.CODE_DISCONNECT;
@@ -43,12 +28,27 @@ import static com.inuker.bluetooth.library.Constants.EXTRA_REQUEST;
 import static com.inuker.bluetooth.library.Constants.EXTRA_SERVICE_UUID;
 import static com.inuker.bluetooth.library.Constants.EXTRA_TYPE;
 
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.os.RemoteException;
+
+import com.inuker.bluetooth.library.connect.BleConnectManager;
+import com.inuker.bluetooth.library.connect.options.BleConnectOptions;
+import com.inuker.bluetooth.library.connect.response.BleGeneralResponse;
+import com.inuker.bluetooth.library.search.BluetoothSearchManager;
+import com.inuker.bluetooth.library.search.SearchRequest;
+import com.inuker.bluetooth.library.utils.BluetoothLog;
+
+import java.util.UUID;
+
 /**
  * Created by dingjikerbo on 2015/10/29.
  */
 public class BluetoothServiceImpl extends IBluetoothService.Stub implements Handler.Callback {
 
-    private static BluetoothServiceImpl sInstance;
+    private static volatile BluetoothServiceImpl sInstance;
 
     private Handler mHandler;
 
@@ -69,19 +69,15 @@ public class BluetoothServiceImpl extends IBluetoothService.Stub implements Hand
 
     @Override
     public void callBluetoothApi(int code, Bundle args, final IResponse response) throws RemoteException {
-        Message msg = mHandler.obtainMessage(code, new BleGeneralResponse() {
-
-            @Override
-            public void onResponse(int code, Bundle data) {
-                if (response != null) {
-                    if (data == null) {
-                        data = new Bundle();
-                    }
-                    try {
-                        response.onResponse(code, data);
-                    } catch (Throwable e) {
-                        BluetoothLog.e(e);
-                    }
+        Message msg = mHandler.obtainMessage(code, (BleGeneralResponse) (code1, data) -> {
+            if (response != null) {
+                if (data == null) {
+                    data = new Bundle();
+                }
+                try {
+                    response.onResponse(code1, data);
+                } catch (Throwable e) {
+                    BluetoothLog.e(e);
                 }
             }
         });

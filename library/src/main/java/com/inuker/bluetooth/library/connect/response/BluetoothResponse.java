@@ -33,10 +33,8 @@ public abstract class BluetoothResponse extends IResponse.Stub implements Handle
 
     @Override
     public boolean handleMessage(Message msg) {
-        switch (msg.what) {
-            case MSG_RESPONSE:
-                onAsyncResponse(msg.arg1, (Bundle) msg.obj);
-                break;
+        if (msg.what == MSG_RESPONSE) {
+            onAsyncResponse(msg.arg1, (Bundle) msg.obj);
         }
         return true;
     }

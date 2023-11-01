@@ -12,11 +12,7 @@ import android.text.TextUtils;
 import com.inuker.bluetooth.library.receiver.listener.BluetoothReceiverListener;
 import com.inuker.bluetooth.library.utils.BluetoothLog;
 import com.inuker.bluetooth.library.utils.BluetoothUtils;
-import com.inuker.bluetooth.library.utils.proxy.ProxyBulk;
-import com.inuker.bluetooth.library.utils.proxy.ProxyInterceptor;
-import com.inuker.bluetooth.library.utils.proxy.ProxyUtils;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,7 +28,7 @@ public class BluetoothReceiver extends BroadcastReceiver implements IBluetoothRe
 
     private Map<String, List<BluetoothReceiverListener>> mListeners;
 
-    private static IBluetoothReceiver mReceiver;
+    private static volatile IBluetoothReceiver mReceiver;
 
     private Handler mHandler;
 
@@ -62,7 +58,7 @@ public class BluetoothReceiver extends BroadcastReceiver implements IBluetoothRe
     }
 
     private BluetoothReceiver() {
-        mListeners = new HashMap<String, List<BluetoothReceiverListener>>();
+        mListeners = new HashMap<>();
         mHandler = new Handler(Looper.getMainLooper(), this);
         BluetoothUtils.registerReceiver(this, getIntentFilter());
     }
@@ -112,7 +108,7 @@ public class BluetoothReceiver extends BroadcastReceiver implements IBluetoothRe
         if (listener != null) {
             List<BluetoothReceiverListener> listeners = mListeners.get(listener.getName());
             if (listeners == null) {
-                listeners = new LinkedList<BluetoothReceiverListener>();
+                listeners = new LinkedList<>();
                 mListeners.put(listener.getName(), listeners);
             }
             listeners.add(listener);
@@ -121,10 +117,8 @@ public class BluetoothReceiver extends BroadcastReceiver implements IBluetoothRe
 
     @Override
     public boolean handleMessage(Message msg) {
-        switch (msg.what) {
-            case MSG_REGISTER:
-                registerInner((BluetoothReceiverListener) msg.obj);
-                break;
+        if (msg.what == MSG_REGISTER) {
+            registerInner((BluetoothReceiverListener) msg.obj);
         }
         return true;
     }

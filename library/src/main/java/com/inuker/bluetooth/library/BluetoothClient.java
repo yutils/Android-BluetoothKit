@@ -3,6 +3,7 @@ package com.inuker.bluetooth.library;
 import android.content.Context;
 
 import com.inuker.bluetooth.library.connect.listener.BleConnectStatusListener;
+import com.inuker.bluetooth.library.connect.listener.BluetoothStateListener;
 import com.inuker.bluetooth.library.connect.options.BleConnectOptions;
 import com.inuker.bluetooth.library.connect.response.BleConnectResponse;
 import com.inuker.bluetooth.library.connect.response.BleMtuResponse;
@@ -12,7 +13,6 @@ import com.inuker.bluetooth.library.connect.response.BleReadRssiResponse;
 import com.inuker.bluetooth.library.connect.response.BleUnnotifyResponse;
 import com.inuker.bluetooth.library.connect.response.BleWriteResponse;
 import com.inuker.bluetooth.library.receiver.listener.BluetoothBondListener;
-import com.inuker.bluetooth.library.connect.listener.BluetoothStateListener;
 import com.inuker.bluetooth.library.search.SearchRequest;
 import com.inuker.bluetooth.library.search.response.SearchResponse;
 import com.inuker.bluetooth.library.utils.BluetoothLog;
@@ -156,7 +156,7 @@ public class BluetoothClient implements IBluetoothClient {
 
     @Override
     public void stopSearch() {
-        BluetoothLog.v(String.format("stopSearch"));
+        BluetoothLog.v("stopSearch");
         mClient.stopSearch();
     }
 

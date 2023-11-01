@@ -11,7 +11,7 @@ public abstract class BluetoothStateListener extends BluetoothClientListener {
     public abstract void onBluetoothStateChanged(boolean openOrClosed);
 
     @Override
-    public void onSyncInvoke(Object...args) {
+    public void onSyncInvoke(Object... args) {
         boolean openOrClosed = (boolean) args[0];
         onBluetoothStateChanged(openOrClosed);
     }

@@ -33,7 +33,7 @@ public abstract class AbsBluetoothReceiver {
 
     boolean containsAction(String action) {
         List<String> actions = getActions();
-        if (!ListUtils.isEmpty(actions) && !TextUtils.isEmpty(action)) {
+        if (ListUtils.isEmpty(actions) && !TextUtils.isEmpty(action)) {
             return actions.contains(action);
         }
         return false;

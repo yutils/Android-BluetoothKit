@@ -44,7 +44,7 @@ public class BeaconParser {
     }
 
     public static List<BeaconItem> parseBeacon(byte[] bytes) {
-        ArrayList<BeaconItem> items = new ArrayList<BeaconItem>();
+        ArrayList<BeaconItem> items = new ArrayList<>();
 
         for (int i = 0; i < bytes.length; ) {
             BeaconItem item = parse(bytes, i);

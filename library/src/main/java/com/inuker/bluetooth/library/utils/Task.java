@@ -14,7 +14,7 @@ public abstract class Task extends AsyncTask<Void, Void, Void> {
 
     public abstract void doInBackground();
 
-    private static Handler mHandler;
+    private static volatile Handler mHandler;
 
     @Override
     protected Void doInBackground(Void... params) {
@@ -34,23 +34,11 @@ public abstract class Task extends AsyncTask<Void, Void, Void> {
     }
 
     public void executeDelayed(final Executor executor, long delayInMillis) {
-        getHandler().postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                executeOnExecutor(executor != null ? executor : AsyncTask.THREAD_POOL_EXECUTOR);
-            }
-        }, delayInMillis);
+        getHandler().postDelayed(() -> executeOnExecutor(executor != null ? executor : AsyncTask.THREAD_POOL_EXECUTOR), delayInMillis);
     }
 
     public void execute(final Executor executor) {
-        getHandler().post(new Runnable() {
-
-            @Override
-            public void run() {
-                executeOnExecutor(executor != null ? executor : AsyncTask.THREAD_POOL_EXECUTOR);
-            }
-        });
+        getHandler().post(() -> executeOnExecutor(executor != null ? executor : AsyncTask.THREAD_POOL_EXECUTOR));
     }
 
     public static void execute(Task task, Executor executor) {
@@ -67,13 +55,7 @@ public abstract class Task extends AsyncTask<Void, Void, Void> {
 
     public static void executeDelayed(final FutureTask task, final Executor executor, long delayInMillis) {
         if (task != null && executor != null) {
-            getHandler().postDelayed(new Runnable() {
-
-                @Override
-                public void run() {
-                    executor.execute(task);
-                }
-            }, delayInMillis);
+            getHandler().postDelayed(() -> executor.execute(task), delayInMillis);
         }
     }
 }

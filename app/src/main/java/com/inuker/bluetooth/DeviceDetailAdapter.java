@@ -2,7 +2,6 @@ package com.inuker.bluetooth;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
-import android.os.ParcelUuid;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +29,7 @@ public class DeviceDetailAdapter extends BaseAdapter {
 
     public DeviceDetailAdapter(Context context, BluetoothDevice device) {
         mContext = context;
-        mDataList = new ArrayList<DetailItem>();
+        mDataList = new ArrayList<>();
         this.mDevice = device;
     }
 
@@ -41,7 +40,7 @@ public class DeviceDetailAdapter extends BaseAdapter {
     }
 
     public void setGattProfile(BleGattProfile profile) {
-        List<DetailItem> items = new ArrayList<DetailItem>();
+        List<DetailItem> items = new ArrayList<>();
 
         List<BleGattService> services = profile.getServices();
 
@@ -78,7 +77,7 @@ public class DeviceDetailAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder = null;
+        ViewHolder holder;
 
         if (convertView == null) {
             convertView = LayoutInflater.from(mContext).inflate(
@@ -86,7 +85,7 @@ public class DeviceDetailAdapter extends BaseAdapter {
 
             holder = new ViewHolder();
             holder.root = convertView.findViewById(R.id.root);
-            holder.uuid = (TextView) convertView.findViewById(R.id.uuid);
+            holder.uuid = convertView.findViewById(R.id.uuid);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();

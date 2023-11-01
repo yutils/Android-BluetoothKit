@@ -7,7 +7,7 @@ import com.inuker.bluetooth.library.BluetoothClient;
  */
 public class ClientManager {
 
-    private static BluetoothClient mClient;
+    private static volatile BluetoothClient mClient;
 
     public static BluetoothClient getClient() {
         if (mClient == null) {

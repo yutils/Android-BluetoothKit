@@ -71,7 +71,7 @@ public class ProxyInvocationHandler implements InvocationHandler, ProxyIntercept
     }
 
     private Object getObject(Object object) {
-        return weakRef ? new WeakReference<Object>(object) : object;
+        return weakRef ? new WeakReference<>(object) : object;
     }
 
     @SuppressWarnings("unchecked")
@@ -91,7 +91,7 @@ public class ProxyInvocationHandler implements InvocationHandler, ProxyIntercept
     private Object safeInvoke(ProxyBulk bulk) {
         try {
             return bulk.safeInvoke();
-        } catch (Throwable e) {
+        } catch (Throwable ignored) {
         }
         return null;
     }

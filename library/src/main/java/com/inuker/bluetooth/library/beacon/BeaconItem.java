@@ -48,7 +48,7 @@ public class BeaconItem {
             for (byte b : bytes) {
                 sbSub.append(String.format(format, b & 0xff));
             }
-            sb.append(sbSub.toString());
+            sb.append(sbSub);
         } catch (Exception e) {
             sb.append(ByteUtils.byteToString(bytes));
         }

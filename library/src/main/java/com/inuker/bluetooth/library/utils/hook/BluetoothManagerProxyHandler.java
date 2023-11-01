@@ -35,7 +35,7 @@ public class BluetoothManagerProxyHandler implements InvocationHandler {
 
         if ("getBluetoothGatt".equals(method.getName())) {
             return Proxy.newProxyInstance(proxy.getClass().getClassLoader(),
-                    new Class<?>[] {IBinder.class, IInterface.class, bluetoothGattClaz},
+                    new Class<?>[]{IBinder.class, IInterface.class, bluetoothGattClaz},
                     new BluetoothGattProxyHandler(bluetoothGatt));
         }
         return method.invoke(iBluetoothManager, args);

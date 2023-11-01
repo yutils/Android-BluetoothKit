@@ -19,8 +19,8 @@ public class ByteUtils {
         StringBuilder sb = new StringBuilder();
 
         if (!isEmpty(bytes)) {
-            for (int i = 0; i < bytes.length; i++) {
-                sb.append(String.format("%02X", bytes[i]));
+            for (byte aByte : bytes) {
+                sb.append(String.format("%02X", aByte));
             }
         }
 
@@ -29,7 +29,7 @@ public class ByteUtils {
 
     public static byte[] trimLast(byte[] bytes) {
         int i = bytes.length - 1;
-        for ( ; i >= 0; i--) {
+        for (; i >= 0; i--) {
             if (bytes[i] != 0) {
                 break;
             }
@@ -154,9 +154,7 @@ public class ByteUtils {
 
         byte[] newBytes = new byte[end - start + 1];
 
-        for (int i = start; i <= end; i++) {
-            newBytes[i - start] = bytes[i];
-        }
+        if (end + 1 - start >= 0) System.arraycopy(bytes, start, newBytes, start - start, end + 1 - start);
 
         return newBytes;
     }
@@ -225,7 +223,7 @@ public class ByteUtils {
     }
 
     public static byte[] fromShort(short n) {
-        return new byte[] {
+        return new byte[]{
                 (byte) n, (byte) (n >>> 8)
         };
     }
