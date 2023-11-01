@@ -3,6 +3,30 @@ BluetoothKit---Android Bluetooth Framework
 
 这个库用于Android蓝牙BLE设备通信，支持设备扫描，连接，读写，通知。
 
+## 根据原版修改
+
+1.迁移到AndroidX
+
+2.sdk切换到安卓14
+
+3.gradle升级到8.3
+
+3.最新版AS文件结构
+
+4.配置buildFeatures{aidl = true}
+
+5.manifest加入android:exported="true"
+
+6.加上 namespace 声明
+
+7.升级到java8语法
+
+8.加入权限声明 <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+9.大于安卓9.0后使用蓝牙，必须拥有位置权限
+
+10.可以自由开关日志输出 BluetoothLog.isShowLog = false;
+
 
 ## 这套框架存在的意义
 
@@ -21,32 +45,24 @@ BluetoothKit---Android Bluetooth Framework
 七、支持拦截所有对蓝牙原生接口的调用
 
 
-## 本框架源码讲解，可参考 **[Android BLE蓝牙通信教程](https://study.163.com/course/introduction/1006381079.htm)**
-
 # **用法**
 
-1、Root build.gradle中，dependencies添加:
 
-```
-allprojects {
-	repositories {
-		...
-		maven { url 'https://www.jitpack.io' }
-	}
-}
-```
 app build.gradle 添加
 
 ```groovy
-implementation 'com.github.g19980115:Android-BluetoothKit:1.4.1'
+implementation 'com.kotlinx:Android-BluetoothKit:1.4.2'
 ```
 
-如果是Eclipse，可以导入bluetoothkit.jar，在AndroidManifest.xml中添加如下：
+1、在AndroidManifest.xml中添加如下：
 ```
 <uses-permission android:name="android.permission.BLUETOOTH" />
 <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
 
 <uses-feature
     android:name="android.hardware.bluetooth_le"
@@ -73,6 +89,19 @@ BluetoothClient mClient = new BluetoothClient(context);
 支持经典蓝牙和BLE设备混合扫描，可自定义扫描策略。每次扫描都要创建新的SearchRequest，不能复用。
 
 ```Java
+//获取权限
+ActivityResultLauncher<String> arl = getActivityResultRegistry().register("123", new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
+@Override
+public void onActivityResult(Boolean result) {
+        if (result) {
+            //获取权限后，立即进行扫描一次
+        } else {
+            //Toast.makeText(MainActivity.this, "必须开启位置信息权限", Toast.LENGTH_SHORT).show();
+        }
+    }
+});
+arl.launch(android.Manifest.permission.ACCESS_FINE_LOCATION);
+
 SearchRequest request = new SearchRequest.Builder()
         .searchBluetoothLeDevice(3000, 3)   // 先扫BLE设备3次，每次3s
         //.searchBluetoothClassicDevice(5000) // 再扫经典蓝牙5s
@@ -134,7 +163,7 @@ mClient.registerBluetoothStateListener(mBluetoothStateListener);
 private final BluetoothStateListener mBluetoothStateListener = new BluetoothStateListener() {
     @Override
     public void onBluetoothStateChanged(boolean openOrClosed) {
-        
+
     }
 
 };
@@ -235,10 +264,10 @@ mClient.connect(MAC, new BleConnectResponse() {
 
 ```
 BleConnectOptions options = new BleConnectOptions.Builder()
-        .setConnectRetry(3)   // 连接如果失败重试3次
-        .setConnectTimeout(30000)   // 连接超时30s
-        .setServiceDiscoverRetry(3)  // 发现服务如果失败重试3次
-        .setServiceDiscoverTimeout(20000)  // 发现服务超时20s
+        .setConnectRetry(3)   // 连接如果失败重试3次
+        .setConnectTimeout(30000)   // 连接超时30s
+        .setServiceDiscoverRetry(3)  // 发现服务如果失败重试3次
+        .setServiceDiscoverTimeout(20000)  // 发现服务超时20s
         .build();
 
 mClient.connect(MAC, options, new BleConnectResponse() {
@@ -447,10 +476,8 @@ mClient.refreshCache(MAC);
 ```
 
 ---
-有问题或建议可以给我邮件，到我的博客留言，或者加QQ群
+有问题或建议可以给我邮件
 
- - Email: dingjikerbo@gmail.com
+ - Email: 3373217@qq.com
 
- - Blog: http://blog.csdn.net/dingjikerbo
-
- - QQ群: 112408886
+ - QQ: 3373217

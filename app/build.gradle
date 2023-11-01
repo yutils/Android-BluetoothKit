@@ -20,8 +20,12 @@ android {
             jniLibs.srcDirs = ['libs']
         }
     }
-    buildFeatures {
-        aidl = true
+    //打包
+    android.applicationVariants.all { variant ->
+        def createDate = new Date().format("yyMMdd_HHmm", TimeZone.getTimeZone("GMT+08:00"))
+        variant.outputs.all {
+            it.outputFileName = "BLE_v${versionName}_${versionCode}_${createDate}_${variant.buildType.name}.apk"
+        }
     }
 }
 dependencies {

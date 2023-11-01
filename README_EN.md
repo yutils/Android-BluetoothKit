@@ -12,7 +12,10 @@ This library allows for easy access to Bluetooth device scan and connection, sup
 <uses-permission android:name="android.permission.BLUETOOTH" />
 <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
 
 <uses-feature
     android:name="android.hardware.bluetooth_le"
@@ -24,7 +27,7 @@ This library allows for easy access to Bluetooth device scan and connection, sup
 1、If you are building with Gradle, simply add the following line to the `dependencies` section of your `build.gradle` file:
 
 ```groovy
-implementation 'com.github.g19980115:Android-BluetoothKit:1.4.1'
+implementation 'com.kotlinx:Android-BluetoothKit:1.4.2'
 ```
 
 2、Create a BluetoothClient as below: 
@@ -38,6 +41,19 @@ BluetoothClient mClient = new BluetoothClient(context);
 This library support both Bluetooth LE device scan and Classic device scan, you could customize the scan policy as below:
 
 ```Java
+//getPermission
+ActivityResultLauncher<String> arl = getActivityResultRegistry().register("123", new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
+@Override
+public void onActivityResult(Boolean result) {
+        if (result) {
+            //success
+        } else {
+            //Toast.makeText(MainActivity.this, "getPermissionFailed", Toast.LENGTH_SHORT).show();
+        }
+    }
+});
+arl.launch(android.Manifest.permission.ACCESS_FINE_LOCATION);
+
 SearchRequest request = new SearchRequest.Builder()
         .searchBluetoothLeDevice(3000, 3)   // scan Bluetooth LE device for 3000ms, 3 times
         //.searchBluetoothClassicDevice(5000) // then scan Bluetooth Classic device for 5000ms, 1 time
