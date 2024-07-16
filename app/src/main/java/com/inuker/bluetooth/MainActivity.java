@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
 //                boolean bit2 = beaconParser.getBit(firstByte, 1); // 获取第1字节的第2bit
 //                beaconParser.setPosition(0); // 将读取起点设置到第1字节处
             }
-            if (mDevices.size() > 0) {
+            if (!mDevices.isEmpty()) {
                 mRefreshLayout.showState(AppConstants.LIST);
             }
         }

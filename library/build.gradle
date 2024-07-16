@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-
 android {
     compileSdk 34
     resourcePrefix "bluetoothkit_"
@@ -22,7 +21,6 @@ android {
 }
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
 }
-
 //apply from: "${getRootDir().absolutePath}/gradles/publish-maven.gradle"
